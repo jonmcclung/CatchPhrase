@@ -1,0 +1,14 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="new_game_button_side_margin">16dp</dimen>
+    <dimen name="header_text_size">32sp</dimen>
+    <dimen name="button_text_size">32sp</dimen>
+    <dimen name="game_list_view_padding">8dp</dimen>
+    <dimen name="game_list_view_text_view_side_padding">4dp</dimen>
+    <dimen name="new_game_dialog_padding">8dp</dimen>
+    <dimen name="new_game_dialog_text_size">36sp</dimen>
+    <dimen name="new_game_dialog_passes_allowed_field_side_margin">16dp</dimen>
+    <dimen name="activity_game_button_height">128dp</dimen>
+</resources>

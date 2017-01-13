@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gameView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:padding="@dimen/game_list_view_padding"
+    android:weightSum="2">
+
+
+    <LinearLayout
+        android:id="@+id/teamOneView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/teamOneNameView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:minLines="2"
+            android:paddingEnd="@dimen/game_list_view_text_view_side_padding"
+            android:paddingLeft="@dimen/game_list_view_text_view_side_padding"
+            android:paddingRight="@dimen/game_list_view_text_view_side_padding"
+            android:paddingStart="@dimen/game_list_view_text_view_side_padding"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+
+        <TextView
+            android:id="@+id/teamOneScoreView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/teamTwoView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/teamTwoNameView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:minLines="2"
+            android:paddingEnd="@dimen/game_list_view_text_view_side_padding"
+            android:paddingLeft="@dimen/game_list_view_text_view_side_padding"
+            android:paddingRight="@dimen/game_list_view_text_view_side_padding"
+            android:paddingStart="@dimen/game_list_view_text_view_side_padding"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+
+        <TextView
+            android:id="@+id/teamTwoScoreView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+    </LinearLayout>
+
+</LinearLayout>

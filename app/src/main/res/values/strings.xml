@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Catch Phrase</string>
+    <string name="new_game_button_text">New Game</string>
+    <string name="games_in_progress">Games in Progress:</string>
+    <string name="game_deleted">Game successfully deleted.</string>
+    <string name="undo">Undo</string>
+    <string name="none">None</string>
+    <string name="games_completed">Games Completed:</string>
+    <string name="got_it">Got it</string>
+    <string name="no_passes_left">No passes left</string>
+    <string name="game_over">Game over</string>
+    <string name="pass_button_text">Pass%%(%d left)</string>
+    <string name="team_one_prompt">Team 1: </string>
+    <string name="team_one_default_name">Red Boots</string>
+    <string name="team_two_prompt">Team 2:</string>
+    <string name="team_two_default_name">Blue Shoes</string>
+    <string name="vs">vs</string>
+    <string name="passes_allowed">Passes allowed:</string>
+    <string name="names_prompt">Names:</string>
+    <string name="default_passes_allowed">1</string>
+    <string name="goal_score_prompt">Playing to</string>
+    <string name="new_game_dialog_title">New Game</string>
+    <string name="ok">OK</string>
+    <string name="default_goal_score">7</string>
+    <string name="steal_dialog_title">Steal</string>
+    <string name="steal_dialog_message">Could the other team guess the word?</string>
+    <string name="steal_dialog_positive">Yes</string>
+    <string name="steal_dialog_negative">No</string>
+    <string name="game_over_dialog_message">%s won!</string>
+    <string name="team_one_name_hint">Team 1 name</string>
+    <string name="team_two_name_hint">Team 2 Name</string>
+</resources>

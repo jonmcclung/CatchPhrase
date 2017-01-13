@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0bdee6</color>
+    <color name="colorPrimaryLight">#d7feff</color>
+    <color name="colorPrimaryDark">#0ba1e6</color>
+    <color name="colorAccent">#ff4081</color>
+    <color name="colorAccentLight">#ffd2e1</color>
+    <color name="background">#eaeaea</color>
+    <color name="listItem">#d2d2d2</color>
+    <color name="inactive">#bfbfbf</color>
+    <color name="ripple">@android:color/white</color>
+    <color name="darkText">#424242</color>
+    <color name="transparent">#00000000</color>
+    <color name="teamOne">@color/colorAccent</color>
+    <color name="teamTwo">@color/colorPrimary</color>
+</resources>
