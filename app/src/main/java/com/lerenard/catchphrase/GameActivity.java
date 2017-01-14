@@ -96,6 +96,12 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        initializeBeep();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
@@ -126,7 +132,10 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
         passButton = (Button) findViewById(R.id.pass_button);
         gotItButton = (Button) findViewById(R.id.got_it_button);
         updateButtons();
+        initializeBeep();
+    }
 
+    private void initializeBeep() {
         beep = new Beep();
         beep.setListener(this);
         beep.restart();
