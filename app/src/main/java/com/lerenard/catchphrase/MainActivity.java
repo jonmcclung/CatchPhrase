@@ -2,6 +2,7 @@ package com.lerenard.catchphrase;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.audiofx.BassBoost;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
     }
 
     private void showSettings() {
-
+        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
     }
 
     private void showHelp() {

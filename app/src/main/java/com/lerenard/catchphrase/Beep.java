@@ -1,6 +1,8 @@
 package com.lerenard.catchphrase;
 
+import android.content.Context;
 import android.media.AudioTrack;
+import android.preference.PreferenceManager;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,12 +16,13 @@ import static com.lerenard.catchphrase.MainApplication.random;
 class Beep {
     private static final String TAG = "test";
     private static final int
-            howLong = 30 * 1000,
             initialDelay = 1300,
             finalDelay = 300,
             steps = 10,
-            delayChange = (initialDelay - finalDelay) / (steps + 1),
-            goalTime = howLong / steps;
+            delayChange = (initialDelay - finalDelay) / (steps + 1);
+    private static int
+            howLong,
+            goalTime;
     private Timer beepTimer, incrementTimer;
     private int delay;
     private AudioTrack sound;
@@ -31,6 +34,18 @@ class Beep {
         cancelled = true;
         silent = true;
         sound = SoundGenerator.generate(.05, 932);
+        Context context = MainApplication.getContext();
+        setHowLong(Integer.parseInt(
+                PreferenceManager
+                        .getDefaultSharedPreferences(context)
+                        .getString(
+                                context.getString(R.string.seconds_in_round_key),
+                                context.getString(R.string.seconds_in_round_default_value))));
+    }
+
+    public static void setHowLong(int howLong) {
+        Beep.howLong = 1000 * howLong;
+        goalTime = Beep.howLong / steps;
     }
 
     public void restart() {

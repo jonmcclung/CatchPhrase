@@ -166,6 +166,7 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                         game.setScores(new int[]{
                                 Integer.parseInt(teamOneScoreView.getText().toString()),
                                 Integer.parseInt(teamTwoScoreView.getText().toString())});
+                        adapter.notifyDataSetChanged();
                         maybeStartNextRound(false);
                     }
                 })
