@@ -86,10 +86,15 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                             @Override
                             public void onClick(
                                     DialogInterface dialog, int which) {
-                                beep.silence();
                                 finish();
                             }
-                        }).show();
+                        })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                }).show();
     }
 
     @Override
@@ -231,6 +236,12 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                                 nextRound();
                             }
                         })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                })
                 .show();
     }
 
@@ -301,6 +312,7 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
 
     @Override
     public void onTimerUp() {
+        beep.silence();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
