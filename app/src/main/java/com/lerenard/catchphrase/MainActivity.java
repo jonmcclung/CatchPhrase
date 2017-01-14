@@ -76,8 +76,15 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
             case R.id.activity_main_help:
                 showHelp();
                 return true;
+            case R.id.settings:
+                showSettings();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSettings() {
+
     }
 
     private void showHelp() {

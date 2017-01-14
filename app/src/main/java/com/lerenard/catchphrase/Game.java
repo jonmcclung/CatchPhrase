@@ -208,4 +208,8 @@ public class Game implements Parcelable, HasId {
         }
         return getActiveTeam() == 1 ? 0 : 1;
     }
+
+    public void setScores(int[] scores) {
+        this.scores = Arrays.copyOf(scores, 2);
+    }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size
+        android:width="@dimen/modify_scores_operator_square_side_length"
+        android:height="@dimen/modify_scores_operator_square_side_length"/>
+    <solid
+        android:color="@color/teamTwo"/>
+
+</shape>

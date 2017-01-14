@@ -49,4 +49,23 @@
         <!--<item name="android:layout_height">wrap_content</item>-->
     <!--</style>-->
 
+    <style name="modify_score_style" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
+        <item name="android:textSize">@dimen/modify_score_text_size</item>
+    </style>
+    
+    <style name="modify_score_operator" parent="@style/modify_score_style">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:clickable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="modify_score_operator_team_one" parent="@style/modify_score_operator">
+        <item name="android:background">@drawable/modify_scores_operator_square_team_one</item>
+    </style>
+
+    <style name="modify_score_operator_team_two" parent="@style/modify_score_operator">
+        <item name="android:background">@drawable/modify_scores_operator_square_team_two</item>
+    </style>
+
 </resources>
