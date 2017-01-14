@@ -2,7 +2,6 @@ package com.lerenard.catchphrase;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.audiofx.BassBoost;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -15,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,21 +48,6 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
         }
     }
 
-    public void newGame(View v) {
-        NewGameDialog dialog = new NewGameDialog();
-        dialog.setListener(this);
-        FragmentManager fm = getSupportFragmentManager();
-        dialog.show(fm, NEW_GAME_DIALOG_TAG);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initializeLists();
-        setSupportActionBar((Toolbar) findViewById(R.id.activity_main_toolbar));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -84,14 +67,12 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
         return super.onOptionsItemSelected(item);
     }
 
-    private void showSettings() {
-        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-    }
-
     private void showHelp() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.help_dialog_title)
-                .setMessage(String.format(Locale.getDefault(), getString(R.string.help_dialog_message), getString(R.string.got_it)))
+                .setMessage(
+                        String.format(Locale.getDefault(), getString(R.string.help_dialog_message),
+                                      getString(R.string.got_it)))
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -101,18 +82,34 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
                 .show();
     }
 
+    private void showSettings() {
+        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+    }
+
+    public void newGame(View v) {
+        NewGameDialog dialog = new NewGameDialog();
+        dialog.setListener(this);
+        FragmentManager fm = getSupportFragmentManager();
+        dialog.show(fm, NEW_GAME_DIALOG_TAG);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initializeLists();
+        setSupportActionBar((Toolbar) findViewById(R.id.activity_main_toolbar));
+    }
+
     private void initializeLists() {
         ArrayList<Game> games = MainApplication.getDatabase().getAllGames();
         ArrayList<Game> inProgressGames = new ArrayList<>();
         ArrayList<Game> completedGames = new ArrayList<>();
         for (Game game : games) {
-            Log.d(TAG, game.toString());
             if (game.isGameOver()) {
-                Log.d(TAG, "this game is over");
                 completedGames.add(game);
             }
             else {
-                Log.d(TAG, "this game is in progress");
                 inProgressGames.add(game);
             }
         }

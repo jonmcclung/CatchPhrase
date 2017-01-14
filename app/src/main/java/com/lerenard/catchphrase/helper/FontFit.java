@@ -1,7 +1,6 @@
 package com.lerenard.catchphrase.helper;
 
 import android.graphics.Paint;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -17,15 +16,23 @@ class FontFit {
     static final float
             defaultMinTextSize = 12,
             defaultMaxTextSize = 64;
+    private static final String TAG = "FontFit";
+    private final TextView textView;
     private float
             minTextSize,
             maxTextSize;
-
-    private static final String TAG = "FontFit";
-
     private int
             widthMeasureSpec,
             heightMeasureSpec;
+    private Paint testPaint;
+
+    FontFit(TextView textView, float minTextSize, float maxTextSize) {
+        this.minTextSize = minTextSize;
+        this.maxTextSize = maxTextSize;
+        this.textView = textView;
+        testPaint = new Paint();
+        testPaint.set(textView.getPaint());
+    }
 
     int getWidthMeasureSpec() {
         return widthMeasureSpec;
@@ -35,15 +42,12 @@ class FontFit {
         return heightMeasureSpec;
     }
 
-    private Paint testPaint;
-    private final TextView textView;
-
-    FontFit(TextView textView, float minTextSize, float maxTextSize) {
-        this.minTextSize = minTextSize;
-        this.maxTextSize = maxTextSize;
-        this.textView = textView;
-        testPaint = new Paint();
-        testPaint.set(textView.getPaint());
+    void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int parentWidth = View.MeasureSpec.getSize(widthMeasureSpec);
+        int height = textView.getMeasuredHeight();
+        refitText(textView.getText().toString(), parentWidth);
+        this.widthMeasureSpec = parentWidth;
+        this.heightMeasureSpec = height;
     }
 
     /* Re size the font so the specified text fits in the text box
@@ -76,14 +80,6 @@ class FontFit {
         }
         // Use lo so that we undershoot rather than overshoot
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, lo);
-    }
-
-    void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int parentWidth = View.MeasureSpec.getSize(widthMeasureSpec);
-        int height = textView.getMeasuredHeight();
-        refitText(textView.getText().toString(), parentWidth);
-        this.widthMeasureSpec = parentWidth;
-        this.heightMeasureSpec = height;
     }
 
     void onTextChanged(final CharSequence text) {

@@ -2,7 +2,6 @@ package com.lerenard.catchphrase;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.lerenard.catchphrase.helper.HasId;
 
@@ -52,7 +51,6 @@ public class Game implements Parcelable, HasId {
         this.passesUsed = passesUsed;
         this.activeTeam = activeTeam;
         this.goalScore = Math.max(1, goalScore);
-        Log.d(TAG, "setting goalScore to max of 1 and " + goalScore + ", which is " + this.goalScore);
     }
 
     public Game(String[] teamNames, int[] passesAllowed, int goalScore) {
