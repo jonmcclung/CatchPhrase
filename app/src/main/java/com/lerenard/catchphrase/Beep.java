@@ -18,7 +18,7 @@ class Beep {
     private static final String TAG = "test";
     private Timer beepTimer, incrementTimer;
     private static final int
-            howLong = 10 * 1000,
+            howLong = 30 * 1000,
             initialDelay = 1300,
             finalDelay = 300,
             steps = 10,

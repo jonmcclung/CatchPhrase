@@ -72,9 +72,10 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
     private void gameOver() {
         new AlertDialog.Builder(this)
                 .setMessage(
-                        String.format(Locale.getDefault(),
-                                      getString(R.string.game_over_dialog_message),
-                                      game.getTeamNames()[game.winner()]))
+                        String.format(
+                                Locale.getDefault(),
+                                getString(R.string.game_over_dialog_message),
+                                game.getTeamNames()[game.winner()]))
                 .setPositiveButton(
                         R.string.ok,
                         new DialogInterface.OnClickListener() {
@@ -84,6 +85,14 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                                 finish();
                             }
                         }).show();
+    }
+
+    @Override
+    public void finish() {
+        Intent data = new Intent().putExtra(GAME_KEY, game);
+        setResult(RESULT_OK, data);
+        beep.cancel();
+        super.finish();
     }
 
     @Override
@@ -148,14 +157,6 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
     }
 
     @Override
-    public void finish() {
-        Intent data = new Intent().putExtra(GAME_KEY, game);
-        setResult(RESULT_OK, data);
-        beep.cancel();
-        super.finish();
-    }
-
-    @Override
     public void onTimerUp() {
         runOnUiThread(new Runnable() {
             @Override
@@ -172,7 +173,7 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     givePointTo(false);
-                                    nextRound();
+                                    maybeStartNextRound();
                                 }
                             }).setNegativeButton(
                             R.string.steal_dialog_negative,
@@ -180,7 +181,7 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                                 @Override
                                 public void onClick(
                                         DialogInterface dialog, int which) {
-                                    nextRound();
+                                    maybeStartNextRound();
                                 }
                             }).show();
                 }
@@ -203,16 +204,35 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
     }
 
     private void nextRound() {
+        nextWord();
+        game.resetPassesUsed();
+        passButton.setEnabled(true);
+        gotItButton.setEnabled(true);
+        updateButtons();
+        beep.restart();
+    }
+
+    private void maybeStartNextRound() {
         if (game.isGameOver()) {
             gameOver();
         }
         else {
-            nextWord();
-            game.resetPassesUsed();
-            passButton.setEnabled(true);
-            gotItButton.setEnabled(true);
-            updateButtons();
-            beep.restart();
+            confirmNextRound();
         }
+    }
+
+    private void confirmNextRound() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.confirm_next_round_title)
+                .setMessage(String.format(Locale.getDefault(),
+                                          getString(R.string.confirm_next_round_message),
+                                          getString(R.string.ok)))
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        nextRound();
+                    }
+                })
+                .show();
     }
 }

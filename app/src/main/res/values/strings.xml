@@ -29,4 +29,9 @@
     <string name="game_over_dialog_message">%s won!</string>
     <string name="team_one_name_hint">Team 1 name</string>
     <string name="team_two_name_hint">Team 2 Name</string>
+    <string name="confirm_next_round_message">Tap %s to start the next round.</string>
+    <string name="confirm_next_round_title">Start next round</string>
+    <string name="help_title">Help</string>
+    <string name="help_dialog_title">Help</string>
+    <string name="help_dialog_message">Catch Phrase is a party game for the whole family.\n\tAn even number of players sit in a circle, and every other person is on a team. The player holding the phone tries to get anyone on his team to guess the phrase in the middle of the screen, without saying any part of the word, or version of it. For example, if the phrase is \"baseball bat,\" he may not say any of the following words: \"baseball,\" \"bat,\" \"base,\" \"ball,\" \"bats,\" etc.\n\tIf he can\'t get his team to guess the word, he may pass, but he can only pass so many times before he\'s stuck with the word he has. Once his team has guessed the phrase, he passes the device to the person to his left. She should tap %s and try to get her team to guess her word.\n\tWhen the buzzer runs out, the team that is not holding the phone gets a point. If that team can also guess the word their opponents were supposed to guess, they score an additional point.\n\tOnce one team has reached a certain number of points (configurable), they win!</string>
 </resources>
