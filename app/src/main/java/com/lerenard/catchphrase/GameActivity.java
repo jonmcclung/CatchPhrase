@@ -99,6 +99,7 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
     protected void onRestart() {
         super.onRestart();
         initializeBeep();
+        wordView.setText(WordBank.getNext());
     }
 
     @Override
