@@ -41,8 +41,8 @@ public class RecyclerAdapter<T extends HasId, VH extends RecyclerViewHolder<T>>
         this.listener = listener;
         this.layout = layout;
         this.supplier = supplier;
-        this.selectedColor = selectedColor;
         this.unselectedColor = unselectedColor;
+        this.selectedColor = selectedColor;
     }
 
     @Override

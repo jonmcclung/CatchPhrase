@@ -58,4 +58,5 @@
     <string name="cancel">Cancel</string>
     <string name="passing_choice">The device was being passed</string>
     <string name="passing_dialog_message">Who was holding the device when time ran out?</string>
+    <string name="new_small_game_dialog_message">How many passes should be allowed?</string>
 </resources>

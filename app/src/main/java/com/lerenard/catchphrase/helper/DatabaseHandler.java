@@ -73,6 +73,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = getValues(game);
         game.setId(db.insert(TABLE_GAMES, null, values));
+        db.close();
     }
 
     /**
@@ -113,6 +114,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Game game = getGame(cursor);
 
         cursor.close();
+        db.close();
         return game;
     }
 
@@ -149,6 +151,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        db.close();
         return res;
     }
 
@@ -179,6 +182,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 getValues(game),
                 _ID + " = ?",
                 new String[]{Long.toString(game.getId())});
+        db.close();
     }
 
     public void batchDeleteGame(Collection<Game> games) {
@@ -219,6 +223,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
         return stringBuilder.toString();
     }
 
@@ -229,6 +234,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 TABLE_GAMES,
                 _ID + " = ?",
                 new String[]{Long.toString(game.getId())});
+        db.close();
     }
 
     public Cursor getCursor() {
@@ -245,6 +251,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
         Game res = getGame(cursor);
         cursor.close();
+        db.close();
         return res;
     }
 }

@@ -11,5 +11,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.lerenard.catchphrase.SmallGameActivity">
 
+    <TextView
+        android:id="@+id/activity_small_game_counter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/listItem"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/end_round_dialog_margin"
+        android:textColor="@color/darkText"
+        android:textSize="@dimen/button_text_size"/>
+
+    <include
+        layout="@layout/activity_game_main_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/activity_small_game_counter"/>
 
 </RelativeLayout>

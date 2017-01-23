@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,38 +14,30 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
-import com.lerenard.catchphrase.helper.FontFitTextView;
 import com.lerenard.catchphrase.helper.GameAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class GameActivity extends AppCompatActivity
+public class GameActivity extends GameBaseActivity
         implements Beep.BeepListener, ModifyScoreListener, EndRoundDialog.Listener,
                    PassingDialog.Listener {
 
-    public static final String GAME_KEY = "GAME_KEY";
     private static final String
             TAG = "GameActivity_",
             SHOW_MODIFY_SCORES_TAG = "SHOW_MODIFY_SCORES_TAG",
             ROUND_END_TAG = "ROUND_END_TAG",
             PASSING_DIALOG_TAG = "PASSING_DIALOG_TAG";
     private GameAdapter adapter;
-    private FontFitTextView wordView;
-    private Game game;
-    private Button passButton, gotItButton;
-    private Beep beep;
-    private String passesLeftFormatString;
     private String[] dialogTags = {SHOW_MODIFY_SCORES_TAG, ROUND_END_TAG, PASSING_DIALOG_TAG};
-    private SoundPlayer player = new SoundPlayer();
+    private Game game;
 
-    public void pass(View v) {
+    @Override
+    protected void pass(View v) {
         if (game.requestPass() != -1) {
-            wordView.setText(WordBank.getNext());
-            updateButtons();
+            super.pass(v);
         }
         else {
             Snackbar.make(
@@ -56,31 +46,40 @@ public class GameActivity extends AppCompatActivity
         }
     }
 
-    private void updateButtons() {
-        if (passesLeftFormatString == null) {
-            passesLeftFormatString = getString(R.string.pass_button_text)
-                    .replace("%%", System.getProperty("line.separator"));
-        }
-        passButton.setText(
-                String.format(Locale.getDefault(), passesLeftFormatString, game.getPassesLeft()));
+    protected void updateButtons() {
+        super.updateButtons();
         passButton.setBackgroundColor(adapter.getActiveTeamBackgroundColor(game.getInactiveTeam()));
         gotItButton.setBackgroundColor(adapter.getActiveTeamBackgroundColor(game.getActiveTeam()));
     }
 
     @Override
+    protected int getPassesLeft() {
+        return game.getPassesLeft();
+    }
+
+    @Override
+    public void gotIt(View v) {
+        if (game.nextTeam()) {
+            super.gotIt(v);
+            adapter.notifyDataSetChanged();
+        }
+        else {
+            // shouldn't happen
+            throw new RuntimeException("why did I get here?");
+        }
+    }
+
+    @Override
+    protected void restoreState(Bundle state) {
+        game = state.getParcelable(GAME_KEY);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         setSupportActionBar((Toolbar) findViewById(R.id.activity_game_toolbar));
-        Bundle savedState =
-                (savedInstanceState == null ? getIntent().getExtras() : savedInstanceState);
-        restoreState(savedState);
-        wordView = (FontFitTextView) findViewById(R.id.word_view);
-        Log.d(TAG, "got wordView: " + wordView);
-
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_game_recyclerView);
         ArrayList<Game> gameDisplayList = new ArrayList<>();
-        gameDisplayList.add(game);
         try {
             adapter = new GameAdapter(this, gameDisplayList, null);
         } catch (NoSuchMethodException e) {
@@ -88,10 +87,8 @@ public class GameActivity extends AppCompatActivity
         }
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        passButton = (Button) findViewById(R.id.pass_button);
-        gotItButton = (Button) findViewById(R.id.got_it_button);
-        startRoundFromInactiveActivity();
+        super.onCreate(savedInstanceState);
+        adapter.add(game, false);
         if (savedInstanceState == null) {
             confirmNextRound(false);
         }
@@ -100,8 +97,83 @@ public class GameActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        beep.cancel();
         updateDatabaseWithGame();
+    }
+
+    @Override
+    protected void nextRound() {
+        super.nextRound();
+    }
+
+    @Override
+    protected void resetPassesLeft() {
+        game.resetPassesUsed();
+    }
+
+    protected void startRoundFromInactiveActivity() {
+        super.startRoundFromInactiveActivity();
+        if (!game.isGameOver()) {
+            updateButtons();
+        }
+        else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onTimerUp() {
+        super.onTimerUp();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!game.isGameOver()) {
+                    int[] colors = {
+                            ContextCompat.getColor(getApplicationContext(), R.color.teamOne),
+                            ContextCompat.getColor(getApplicationContext(), R.color.teamTwo)};
+                    EndRoundDialog dialog = EndRoundDialog.newInstance(
+                            colors[game.getInactiveTeam()],
+                            colors[game.getActiveTeam()]);
+                    dialog.setListener(GameActivity.this);
+                    dialog.show(getSupportFragmentManager(), ROUND_END_TAG);
+                }
+                else {
+                    gameOver();
+                }
+            }
+        });
+    }
+
+    private void gameOver() {
+        // a#5: 932
+        // d5:  1175
+        // f5:  1397
+        // a6:  1760
+        // a#6: 1865
+        double[] gameOverFrequencies = {932, 1175, 1397, 1760, 1865};
+        double[] gameOverDurations = {.2, .2, .2, .2, .8};
+        player.play(SoundGenerator.generate(gameOverDurations, gameOverFrequencies));
+
+        new AlertDialog.Builder(this)
+                .setMessage(
+                        String.format(
+                                Locale.getDefault(),
+                                getString(R.string.game_over_dialog_message),
+                                game.getTeamNames()[game.winner()]))
+                .setPositiveButton(
+                        R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                }).show();
     }
 
     private void updateDatabaseWithGame() {
@@ -132,71 +204,6 @@ public class GameActivity extends AppCompatActivity
         }*/
     }
 
-    private void restoreState(Bundle state) {
-        game = state.getParcelable(GAME_KEY);
-    }
-
-    private void startRoundFromInactiveActivity() {
-        initializeBeep();
-        if (!game.isGameOver()) {
-            updateButtons();
-        }
-        else {
-            finish();
-        }
-    }
-
-    private void confirmNextRound(boolean isNext) {
-//        String s = "hello";
-        new AlertDialog.Builder(this)
-                .setTitle(String.format(
-                        Locale.getDefault(),
-                        getString(R.string.confirm_next_round_title),
-                        isNext ? getString(R.string.confirm_next_round_title_is_next)
-                               : getString(R.string.confirm_next_round_title_is_not_next)))
-                .setMessage(String.format(
-                        Locale.getDefault(),
-                        getString(R.string.confirm_next_round_message),
-                        getString(R.string.ok),
-                        isNext ? getString(R.string.confirm_next_round_is_next)
-                               : getString(
-                                       R.string.confirm_next_round_is_not_next)))
-                .setPositiveButton(
-                        R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(
-                                    DialogInterface dialog, int which) {
-                                nextRound();
-                            }
-                        })
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                })
-                .show();
-    }
-
-    private void initializeBeep() {
-        beep = new Beep();
-        beep.setListener(this);
-    }
-
-    private void nextRound() {
-        nextWord();
-        game.resetPassesUsed();
-        passButton.setEnabled(true);
-        gotItButton.setEnabled(true);
-        updateButtons();
-        beep.restart();
-    }
-
-    private void nextWord() {
-        wordView.setText(WordBank.getNext());
-        updateButtons();
-    }
-
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -223,12 +230,6 @@ public class GameActivity extends AppCompatActivity
                 }
             }
         }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        startRoundFromInactiveActivity();
     }
 
     @Override
@@ -269,65 +270,6 @@ public class GameActivity extends AppCompatActivity
         setResult(RESULT_OK, data);
         beep.cancel();
         super.finish();
-    }
-
-    @Override
-    public void onTimerUp() {
-        beep.silence();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                passButton.setEnabled(false);
-                gotItButton.setEnabled(false);
-                if (!game.isGameOver()) {
-                    int[] colors = {
-                            ContextCompat.getColor(getApplicationContext(), R.color.teamOne),
-                            ContextCompat.getColor(getApplicationContext(), R.color.teamTwo)};
-                    EndRoundDialog dialog = EndRoundDialog.newInstance(
-                            colors[game.getInactiveTeam()],
-                            colors[game.getActiveTeam()]);
-                    dialog.setListener(GameActivity.this);
-                    dialog.show(getSupportFragmentManager(), ROUND_END_TAG);
-                }
-                else {
-                    gameOver();
-                }
-            }
-        });
-        player.play(SoundGenerator.generate(2, 500));
-    }
-
-    private void gameOver() {
-        // a#5: 932
-        // d5:  1175
-        // f5:  1397
-        // a6:  1760
-        // a#6: 1865
-        double[] gameOverFrequencies = {932, 1175, 1397, 1760, 1865};
-        double[] gameOverDurations = {.2, .2, .2, .2, .8};
-        player.play(SoundGenerator.generate(gameOverDurations, gameOverFrequencies));
-
-        new AlertDialog.Builder(this)
-                .setMessage(
-                        String.format(
-                                Locale.getDefault(),
-                                getString(R.string.game_over_dialog_message),
-                                game.getTeamNames()[game.winner()]))
-                .setPositiveButton(
-                        R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(
-                                    DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        })
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                }).show();
     }
 
     @Override
@@ -374,15 +316,6 @@ public class GameActivity extends AppCompatActivity
         }
     }
 
-    private void startPassingDialog() {
-        PassingDialog dialog = new PassingDialog();
-        Bundle args = new Bundle();
-        args.putStringArray(PassingDialog.TEAM_NAMES_KEY, game.getTeamNames());
-        dialog.setArguments(args);
-        dialog.setListener(this);
-        dialog.show(getSupportFragmentManager(), PASSING_DIALOG_TAG);
-    }
-
     @Override
     public void onChoiceSelected(EndRoundDialog.Choices choice) {
         switch (choice) {
@@ -401,16 +334,25 @@ public class GameActivity extends AppCompatActivity
         }
     }
 
-    public void gotIt(View v) {
-        if (game.nextTeam()) {
-            nextWord();
-            adapter.notifyDataSetChanged();
+    private void adjustPoints(int who, int howMuch) {
+        adjustPoints(who, howMuch, false);
+    }
+
+    private void startPassingDialog() {
+        PassingDialog dialog = new PassingDialog();
+        Bundle args = new Bundle();
+        args.putStringArray(PassingDialog.TEAM_NAMES_KEY, game.getTeamNames());
+        dialog.setArguments(args);
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), PASSING_DIALOG_TAG);
+    }
+
+    private void adjustPoints(int who, int howMuch, boolean silent) {
+        if (!silent) {
+            makePointAdjustmentSounds(who, howMuch);
         }
-        else {
-            // shouldn't happen
-            throw new RuntimeException("why did I get here?");
-            // gameOver();
-        }
+        game.adjustPoints(who, howMuch);
+        adapter.notifyDataSetChanged();
     }
 
     private void givePointTo(boolean active) {
@@ -420,18 +362,6 @@ public class GameActivity extends AppCompatActivity
         else {
             adjustPoints(game.getInactiveTeam(), 1);
         }
-    }
-
-    private void adjustPoints(int who, int howMuch) {
-        adjustPoints(who, howMuch, false);
-    }
-
-    private void adjustPoints(int who, int howMuch, boolean silent) {
-        if (!silent) {
-            makePointAdjustmentSounds(who, howMuch);
-        }
-        game.adjustPoints(who, howMuch);
-        adapter.notifyDataSetChanged();
     }
 
     @Override

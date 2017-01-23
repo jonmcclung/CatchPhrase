@@ -21,10 +21,13 @@ import android.widget.TextView;
 
 public class NewGameDialog extends DialogFragment {
 
-    private static final String TEAM_ONE_DEFAULT_NAME = "TEAM_ONE_DEFAULT_NAME",
-            TEAM_TWO_DEFAULT_NAME = "TEAM_TWO_DEFAULT_NAME", TEAM_ONE_DEFAULT_PASSES_ALLOWED =
-            "TEAM_ONE_DEFAULT_PASSES_ALLOWED", TEAM_TWO_DEFAULT_PASSES_ALLOWED =
-            "TEAM_TWO_DEFAULT_PASSES_ALLOWED", DEFAULT_GOAL_SCORE = "DEFAULT_GOAL_SCORE";
+    private static final String TEAM_ONE_DEFAULT_NAME = "TEAM_ONE_DEFAULT_NAME";
+    private static final String TEAM_TWO_DEFAULT_NAME = "TEAM_TWO_DEFAULT_NAME";
+    public static final String TEAM_ONE_DEFAULT_PASSES_ALLOWED =
+            "TEAM_ONE_DEFAULT_PASSES_ALLOWED";
+    private static final String TEAM_TWO_DEFAULT_PASSES_ALLOWED =
+            "TEAM_TWO_DEFAULT_PASSES_ALLOWED";
+    private static final String DEFAULT_GOAL_SCORE = "DEFAULT_GOAL_SCORE";
     private NewGameDialogListener listener;
     private EditText teamOneNameField, teamTwoNameField, teamOnePassesAllowed, teamTwoPassesAllowed,
             goalScoreField;

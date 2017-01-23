@@ -29,11 +29,13 @@ import java.util.Locale;
 import co.paulburke.android.itemtouchhelperdemo.helper.SimpleItemTouchHelperCallback;
 
 
-public class MainActivity extends AppCompatActivity implements NewGameDialog.NewGameDialogListener {
+public class MainActivity extends AppCompatActivity implements NewGameDialog.NewGameDialogListener,
+                                                               NewSmallGameDialog.Listener {
     private static final int UPDATE_GAME = 0;
     private static final java.lang.String INDEX_KEY = "INDEX_KEY";
     private static final String NEW_GAME_DIALOG_TAG = "NEW_GAME_DIALOG_TAG";
     private static final String TAG = "MainActivity_";
+    private static final java.lang.String NEW_SMALL_GAME_DIALOG_TAG = "NEW_SMALL_GAME_DIALOG_TAG";
     private RecyclerView inProgressList, completedList;
     private GameAdapter inProgressAdapter;
     private GameAdapter completedAdapter;
@@ -45,6 +47,12 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
                 (NewGameDialog) getSupportFragmentManager().findFragmentByTag(NEW_GAME_DIALOG_TAG);
         if (dialog != null) {
             dialog.setListener(this);
+        }
+        NewSmallGameDialog newSmallGameDialog =
+                (NewSmallGameDialog) getSupportFragmentManager()
+                        .findFragmentByTag(NEW_SMALL_GAME_DIALOG_TAG);
+        if (newSmallGameDialog != null) {
+            newSmallGameDialog.setListener(this);
         }
     }
 
@@ -87,10 +95,35 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
     }
 
     public void newGame(View v) {
+        new AlertDialog.Builder(this)
+                .setTitle("New Game")
+                .setMessage("What kind of game would you like to play?")
+                .setPositiveButton("Team game", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newTeamGame();
+                    }
+                })
+                .setNeutralButton("2-3 player game", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newSmallGame();
+                    }
+                })
+                .show();
+    }
+
+    private void newTeamGame() {
         NewGameDialog dialog = new NewGameDialog();
         dialog.setListener(this);
         FragmentManager fm = getSupportFragmentManager();
         dialog.show(fm, NEW_GAME_DIALOG_TAG);
+    }
+
+    private void newSmallGame() {
+        NewSmallGameDialog dialog = new NewSmallGameDialog();
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), NEW_SMALL_GAME_DIALOG_TAG);
     }
 
     @Override
@@ -241,6 +274,13 @@ public class MainActivity extends AppCompatActivity implements NewGameDialog.New
         Intent gameIntent = new Intent(getApplicationContext(), GameActivity.class)
                 .putExtra(GameActivity.GAME_KEY, game);
         startActivityForResult(gameIntent, UPDATE_GAME);
+    }
+
+    @Override
+    public void onPassesAllowedSelected(int passesAllowed) {
+        Intent smallGameIntent = new Intent(getApplicationContext(), SmallGameActivity.class)
+                .putExtra(SmallGameActivity.PASSES_ALLOWED_KEY, passesAllowed);
+        startActivity(smallGameIntent);
     }
 
     abstract class GameListener implements DataSetListener<Game> {
