@@ -5,7 +5,7 @@
     <dimen name="new_game_button_side_margin">16dp</dimen>
     <dimen name="header_text_size">32sp</dimen>
     <dimen name="button_text_size">32sp</dimen>
-    <dimen name="modify_score_text_size">48dp</dimen>
+    <dimen name="modify_score_text_size">48sp</dimen>
     <dimen name="game_list_view_padding">8dp</dimen>
     <dimen name="game_list_view_text_view_side_padding">4dp</dimen>
     <dimen name="new_game_dialog_padding">8dp</dimen>
@@ -14,4 +14,7 @@
     <dimen name="activity_game_button_height">128dp</dimen>
     <dimen name="modify_scores_dialog_margin">32dp</dimen>
     <dimen name="modify_scores_operator_square_side_length">64dp</dimen>
+    <dimen name="end_round_dialog_margin">8dp</dimen>
+    <dimen name="end_round_dialog_text_size">24sp</dimen>
+    <dimen name="passing_dialog_button_padding">4dp</dimen>
 </resources>

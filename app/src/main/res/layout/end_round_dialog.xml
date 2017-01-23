@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/end_round_dialog_margin">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/end_round_dialog_message_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/steal_dialog_message"
+            android:textSize="@dimen/end_round_dialog_text_size"/>
+
+        <LinearLayout
+            android:id="@+id/end_round_dialog_yes_no_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/end_round_dialog_message_view"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/successful_steal_button"
+                style="@style/end_round_dialog_button"
+                android:text="@string/steal_dialog_positive"/>
+
+            <Button
+                android:id="@+id/unsuccessful_steal_button"
+                style="@style/end_round_dialog_button"
+                android:layout_marginLeft="@dimen/end_round_dialog_margin"
+                android:layout_marginStart="@dimen/end_round_dialog_margin"
+                android:text="@string/steal_dialog_negative"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/passing_button"
+            style="@style/end_round_dialog_button"
+            android:layout_below="@id/end_round_dialog_yes_no_layout"
+            android:text="@string/passing_choice"/>
+    </RelativeLayout>
+</ScrollView>

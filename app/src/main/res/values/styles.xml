@@ -9,8 +9,9 @@
         <item name="colorControlHighlight">@color/ripple</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -28,31 +29,31 @@
     </style>
 
     <!--<style name="promptStyle" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">-->
-        <!--<item name="android:layout_alignParentLeft">true</item>-->
-        <!--<item name="android:layout_alignParentStart">true</item>-->
-        <!--<item name="android:layout_width">wrap_content</item>-->
-        <!--<item name="android:layout_height">wrap_content</item>-->
+    <!--<item name="android:layout_alignParentLeft">true</item>-->
+    <!--<item name="android:layout_alignParentStart">true</item>-->
+    <!--<item name="android:layout_width">wrap_content</item>-->
+    <!--<item name="android:layout_height">wrap_content</item>-->
     <!--</style>-->
 
     <!--<style name="teamOnePromptStyle" parent="promptStyle">-->
-        <!--<item name="android:text">@string/team_one_prompt</item>-->
+    <!--<item name="android:text">@string/team_one_prompt</item>-->
     <!--</style>-->
 
     <!--<style name="teamTwoPromptStyle" parent="promptStyle">-->
-        <!--<item name="android:text">@string/team_two_prompt</item>-->
+    <!--<item name="android:text">@string/team_two_prompt</item>-->
     <!--</style>-->
     <!---->
     <!--<style name="responseStyle" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">-->
-        <!--<item name="android:layout_alignParentRight">true</item>-->
-        <!--<item name="android:layout_alignParentEnd">true</item>-->
-        <!--<item name="android:layout_width">0dp</item>-->
-        <!--<item name="android:layout_height">wrap_content</item>-->
+    <!--<item name="android:layout_alignParentRight">true</item>-->
+    <!--<item name="android:layout_alignParentEnd">true</item>-->
+    <!--<item name="android:layout_width">0dp</item>-->
+    <!--<item name="android:layout_height">wrap_content</item>-->
     <!--</style>-->
 
     <style name="modify_score_style" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
         <item name="android:textSize">@dimen/modify_score_text_size</item>
     </style>
-    
+
     <style name="modify_score_operator" parent="@style/modify_score_style">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/white</item>
@@ -66,6 +67,25 @@
 
     <style name="modify_score_operator_team_two" parent="@style/modify_score_operator">
         <item name="android:background">@drawable/modify_scores_operator_square_team_two</item>
+    </style>
+
+    <style name="end_round_dialog_button" parent="Widget.AppCompat.Button">
+        <item name="android:layout_marginTop">@dimen/end_round_dialog_margin</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/end_round_dialog_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="passing_dialog_button" parent="Widget.AppCompat.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/passing_dialog_button_padding</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
     </style>
 
 </resources>

@@ -20,7 +20,7 @@ public class GameCompletedViewHolder extends RecyclerViewHolder<Game> {
             View itemView,
             GameCompletedAdapter adapter) {
         super(itemView, adapter);
-        RelativeLayout rootView = (RelativeLayout) itemView.findViewById(R.id.gameView);
+        LinearLayout rootView = (LinearLayout) itemView.findViewById(R.id.gameView);
         rootView.setBackgroundColor(adapter.getBackgroundColor());
         teamOneNameView = (TextView) itemView.findViewById(R.id.teamOneNameView);
         teamTwoNameView = (TextView) itemView.findViewById(R.id.teamTwoNameView);

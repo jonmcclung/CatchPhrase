@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/end_round_dialog_margin">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/passing_dialog_message_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/passing_dialog_message"
+            android:textSize="@dimen/end_round_dialog_text_size"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/passing_dialog_message_view"
+            android:layout_marginTop="@dimen/end_round_dialog_margin"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/team_one_name_button"
+                style="@style/passing_dialog_button"
+                android:background="@color/teamOne"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_marginLeft="@dimen/end_round_dialog_margin"
+                android:layout_marginStart="@dimen/end_round_dialog_margin"
+                android:id="@+id/team_two_name_button"
+                style="@style/passing_dialog_button"
+                android:background="@color/teamTwo"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+</ScrollView>

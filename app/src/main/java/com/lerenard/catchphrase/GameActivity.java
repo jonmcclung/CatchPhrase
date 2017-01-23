@@ -5,34 +5,42 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.lerenard.catchphrase.helper.FontFitTextView;
 import com.lerenard.catchphrase.helper.GameAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
-public class GameActivity extends AppCompatActivity implements Beep.BeepListener {
+public class GameActivity extends AppCompatActivity
+        implements Beep.BeepListener, ModifyScoreListener, EndRoundDialog.Listener,
+                   PassingDialog.Listener {
 
     public static final String GAME_KEY = "GAME_KEY";
-    private static final String TAG = "GameActivity_";
+    private static final String
+            TAG = "GameActivity_",
+            SHOW_MODIFY_SCORES_TAG = "SHOW_MODIFY_SCORES_TAG",
+            ROUND_END_TAG = "ROUND_END_TAG",
+            GAME_OVER_TAG = "GAME_OVER_TAG",
+            PASSING_DIALOG_TAG = "PASSING_DIALOG_TAG";
     private GameAdapter adapter;
     private FontFitTextView wordView;
     private Game game;
     private Button passButton, gotItButton;
     private Beep beep;
     private String passesLeftFormatString;
-    private boolean dialogShowing;
 
     public void pass(View v) {
         if (game.requestPass() != -1) {
@@ -57,159 +65,70 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
         gotItButton.setBackgroundColor(adapter.getActiveTeamBackgroundColor(game.getActiveTeam()));
     }
 
-    public void gotIt(View v) {
-        if (game.nextTeam()) {
-            nextWord();
-            adapter.notifyDataSetChanged();
-        }
-        else {
-            gameOver();
-        }
-    }
-
-    private void nextWord() {
-        wordView.setText(WordBank.getNext());
-        updateButtons();
-    }
-
-    private void gameOver() {
-        new AlertDialog.Builder(this)
-                .setMessage(
-                        String.format(
-                                Locale.getDefault(),
-                                getString(R.string.game_over_dialog_message),
-                                game.getTeamNames()[game.winner()]))
-                .setPositiveButton(
-                        R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(
-                                    DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        })
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                }).show();
-    }
-
     @Override
-    protected void onRestart() {
-        super.onRestart();
-        initializeBeep();
-        if (!dialogShowing) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
+        setSupportActionBar((Toolbar) findViewById(R.id.activity_game_toolbar));
+        Bundle savedState =
+                (savedInstanceState == null ? getIntent().getExtras() : savedInstanceState);
+        restoreState(savedState);
+        wordView = (FontFitTextView) findViewById(R.id.word_view);
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_game_recyclerView);
+        ArrayList<Game> gameDisplayList = new ArrayList<>();
+        gameDisplayList.add(game);
+        try {
+            adapter = new GameAdapter(this, gameDisplayList, null);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        passButton = (Button) findViewById(R.id.pass_button);
+        gotItButton = (Button) findViewById(R.id.got_it_button);
+        startRoundFromInactiveActivity();
+        if (savedInstanceState == null) {
             confirmNextRound(false);
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_game, menu);
-        return true;
+    protected void onStop() {
+        super.onStop();
+        beep.cancel();
+        updateDatabaseWithGame();
+    }
+
+    private void updateDatabaseWithGame() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                MainApplication.getDatabase().updateGame(game);
+                return null;
+            }
+        }.execute();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.modify_scores:
-                showModifyScores();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(GAME_KEY, game);
     }
 
-    private void showModifyScores() {
-        beep.interrupt();
-        View dialogView = getLayoutInflater().inflate(R.layout.modify_scores_dialog, null);
-        final TextView teamOneScoreView =
-                (TextView) dialogView.findViewById(R.id.team_one_score_view);
-        final TextView teamTwoScoreView =
-                (TextView) dialogView.findViewById(R.id.team_two_score_view);
-        TextView teamOneIncrement = (TextView) dialogView.findViewById(R.id.team_one_increment);
-        TextView teamTwoIncrement = (TextView) dialogView.findViewById(R.id.team_two_increment);
-        TextView teamOneDecrement = (TextView) dialogView.findViewById(R.id.team_one_decrement);
-        TextView teamTwoDecrement = (TextView) dialogView.findViewById(R.id.team_two_decrement);
-
-        teamOneScoreView.setText(String.valueOf(game.getScores()[0]));
-        teamTwoScoreView.setText(String.valueOf(game.getScores()[1]));
-
-        teamOneIncrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adjustPointsOnTextView(teamOneScoreView, 1);
-            }
-        });
-        teamTwoIncrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adjustPointsOnTextView(teamTwoScoreView, 1);
-            }
-        });
-        teamOneDecrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adjustPointsOnTextView(teamOneScoreView, -1);
-            }
-        });
-        teamTwoDecrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adjustPointsOnTextView(teamTwoScoreView, -1);
-            }
-        });
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.modify_scores_dialog_title)
-                .setView(dialogView)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        game.setScores(new int[]{
-                                Integer.parseInt(teamOneScoreView.getText().toString()),
-                                Integer.parseInt(teamTwoScoreView.getText().toString())});
-                        adapter.notifyDataSetChanged();
-                        maybeStartNextRound(false);
-                    }
-                })
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        maybeStartNextRound(false);
-                    }
-                })
-                .show();
+    private void restoreState(Bundle state) {
+        game = state.getParcelable(GAME_KEY);
     }
 
-    private static void adjustPointsOnTextView(TextView view, int howMuch) {
-        view.setText(String.format(
-                Locale.getDefault(),
-                "%d",
-                howMuch + Integer.parseInt(view.getText().toString())));
-    }
-
-    private void maybeStartNextRound(boolean isNext) {
-        if (game.isGameOver()) {
-            gameOver();
+    private void startRoundFromInactiveActivity() {
+        initializeBeep();
+        if (!game.isGameOver()) {
+            updateButtons();
         }
         else {
-            confirmNextRound(isNext);
+            finish();
         }
-    }
-
-    @Override
-    public void finish() {
-        Intent data = new Intent().putExtra(GAME_KEY, game);
-        setResult(RESULT_OK, data);
-        beep.cancel();
-        super.finish();
-    }
-
-    private void initializeBeep() {
-        beep = new Beep();
-        beep.setListener(this);
     }
 
     private void confirmNextRound(boolean isNext) {
@@ -244,6 +163,11 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
                 .show();
     }
 
+    private void initializeBeep() {
+        beep = new Beep();
+        beep.setListener(this);
+    }
+
     private void nextRound() {
         nextWord();
         game.resetPassesUsed();
@@ -253,59 +177,74 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
         beep.restart();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-        setSupportActionBar((Toolbar) findViewById(R.id.activity_game_toolbar));
-        Bundle savedState =
-                (savedInstanceState == null ? getIntent().getExtras() : savedInstanceState);
-        restoreState(savedState);
-        wordView = (FontFitTextView) findViewById(R.id.word_view);
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_game_recyclerView);
-        ArrayList<Game> gameDisplayList = new ArrayList<>();
-        gameDisplayList.add(game);
-        try {
-            adapter = new GameAdapter(this, gameDisplayList, null);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        passButton = (Button) findViewById(R.id.pass_button);
-        gotItButton = (Button) findViewById(R.id.got_it_button);
+    private void nextWord() {
+        wordView.setText(WordBank.getNext());
         updateButtons();
-        initializeBeep();
-        confirmNextRound(false);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        beep.cancel();
-        updateDatabaseWithGame();
-    }
-
-    private void updateDatabaseWithGame() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                MainApplication.getDatabase().updateGame(game);
-                return null;
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        ModifyScoreDialog modifyScoreDialog =
+                (ModifyScoreDialog) getSupportFragmentManager()
+                        .findFragmentByTag(SHOW_MODIFY_SCORES_TAG);
+        if (modifyScoreDialog != null) {
+            modifyScoreDialog.setListener(this);
+        }
+        else {
+            EndRoundDialog endRoundDialog =
+                    (EndRoundDialog) getSupportFragmentManager().findFragmentByTag(ROUND_END_TAG);
+            if (endRoundDialog != null) {
+                endRoundDialog.setListener(this);
             }
-        }.execute();
+            else {
+                PassingDialog passingDialog = (PassingDialog) getSupportFragmentManager()
+                        .findFragmentByTag(PASSING_DIALOG_TAG);
+                if (passingDialog != null) {
+                    passingDialog.setListener(this);
+                }
+                else{
+                    confirmNextRound(false);
+                }
+            }
+        }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(GAME_KEY, game);
+    protected void onRestart() {
+        super.onRestart();
+        startRoundFromInactiveActivity();
     }
 
-    private void restoreState(Bundle state) {
-        game = state.getParcelable(GAME_KEY);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_game, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.modify_scores:
+                showModifyScores();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showModifyScores() {
+        beep.interrupt();
+        ModifyScoreDialog dialog = ModifyScoreDialog.newInstance(game.getScores());
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), SHOW_MODIFY_SCORES_TAG);
+    }
+
+    @Override
+    public void finish() {
+        Intent data = new Intent().putExtra(GAME_KEY, game);
+        setResult(RESULT_OK, data);
+        beep.cancel();
+        super.finish();
     }
 
     @Override
@@ -316,32 +255,15 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
             public void run() {
                 passButton.setEnabled(false);
                 gotItButton.setEnabled(false);
-                givePointTo(false);
                 if (!game.isGameOver()) {
-                    new AlertDialog.Builder(GameActivity.this)
-                            .setTitle(R.string.steal_dialog_title).setMessage(
-                            R.string.steal_dialog_message).setPositiveButton(
-
-                            R.string.steal_dialog_positive, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    givePointTo(false);
-                                    maybeStartNextRound(true);
-                                }
-                            }).setNegativeButton(
-                            R.string.steal_dialog_negative,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(
-                                        DialogInterface dialog, int which) {
-                                    maybeStartNextRound(true);
-                                }
-                            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            maybeStartNextRound(true);
-                        }
-                    }).show();
+                    int[] colors = {
+                            ContextCompat.getColor(getApplicationContext(), R.color.teamOne),
+                            ContextCompat.getColor(getApplicationContext(), R.color.teamTwo)};
+                    EndRoundDialog dialog = EndRoundDialog.newInstance(
+                            colors[game.getInactiveTeam()],
+                            colors[game.getActiveTeam()]);
+                    dialog.setListener(GameActivity.this);
+                    dialog.show(getSupportFragmentManager(), ROUND_END_TAG);
                 }
                 else {
                     gameOver();
@@ -351,13 +273,146 @@ public class GameActivity extends AppCompatActivity implements Beep.BeepListener
         SoundGenerator.generate(2, 500).play();
     }
 
-    private void givePointTo(boolean active) {
-        if (active) {
-            game.adjustPoints(game.getActiveTeam(), 1);
+    private void gameOver() {
+        // a#5: 932
+        // d5:  1175
+        // f5:  1397
+        // a6:  1760
+        // a#6: 1865
+        double[] interruptFrequencies = {932, 1175, 1397, 1760, 1865};
+        double[] interruptDurations = {.2, .2, .2, .2, .8};
+        SoundGenerator.generate(interruptDurations, interruptFrequencies).play();
+
+        new AlertDialog.Builder(this)
+                .setMessage(
+                        String.format(
+                                Locale.getDefault(),
+                                getString(R.string.game_over_dialog_message),
+                                game.getTeamNames()[game.winner()]))
+                .setPositiveButton(
+                        R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onScoresAdjusted(int[] scores) {
+        game.setScores(scores);
+        adapter.notifyDataSetChanged();
+        maybeStartNextRound(false);
+    }
+
+    @Override
+    public void tentativeAdjustment(int who, int howMuch) {
+        makePointAdjustmentSounds(who, howMuch);
+    }
+
+    @Override
+    public void onCancel() {
+        Log.d(TAG, "cancelling");
+        beep.playCancelSound();
+        maybeStartNextRound(true);
+    }
+
+    private void makePointAdjustmentSounds(int who, int howMuch) {
+        double[][] teamFrequencies = {{932, 1109, 932}, {932, 880, 932}};
+        if (howMuch < 0) {
+            howMuch *= -1;
+            who = (who + 1) % 2;
+        }
+        int length = teamFrequencies[who].length;
+        double[] durations = new double[howMuch * length], frequencies =
+                new double[howMuch * length];
+        Arrays.fill(durations, .2);
+        for (int i = 0; i < howMuch; ++i) {
+            System.arraycopy(teamFrequencies[who], 0, frequencies, i * length, length);
+        }
+        SoundGenerator.generate(durations, frequencies).play();
+    }
+
+    private void maybeStartNextRound(boolean isNext) {
+        if (game.isGameOver()) {
+            gameOver();
         }
         else {
-            game.adjustPoints(game.getInactiveTeam(), 1);
+            confirmNextRound(isNext);
         }
+    }
+
+    private void startPassingDialog() {
+        PassingDialog dialog = new PassingDialog();
+        Bundle args = new Bundle();
+        args.putStringArray(PassingDialog.TEAM_NAMES_KEY, game.getTeamNames());
+        dialog.setArguments(args);
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), PASSING_DIALOG_TAG);
+    }
+
+    @Override
+    public void onChoiceSelected(EndRoundDialog.Choices choice) {
+        switch (choice) {
+            case SUCCESSFUL_STEAL:
+                adjustPoints(game.getInactiveTeam(), 2);
+                maybeStartNextRound(true);
+                break;
+            case UNSUCCESSFUL_STEAL:
+                adjustPoints(game.getInactiveTeam(), 1);
+                maybeStartNextRound(true);
+                break;
+            case PASSING:
+                gotIt(null);
+                startPassingDialog();
+                break;
+        }
+    }
+
+    public void gotIt(View v) {
+        if (game.nextTeam()) {
+            nextWord();
+            adapter.notifyDataSetChanged();
+        }
+        else {
+            // shouldn't happen
+            throw new RuntimeException("why did I get here?");
+            // gameOver();
+        }
+    }
+
+    private void givePointTo(boolean active) {
+        if (active) {
+            adjustPoints(game.getActiveTeam(), 1);
+        }
+        else {
+            adjustPoints(game.getInactiveTeam(), 1);
+        }
+    }
+
+    private void adjustPoints(int who, int howMuch) {
+        adjustPoints(who, howMuch, false);
+    }
+
+    private void adjustPoints(int who, int howMuch, boolean silent) {
+        if (!silent) {
+            makePointAdjustmentSounds(who, howMuch);
+        }
+        game.adjustPoints(who, howMuch);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onTeamSelected(int who) {
+        adjustPoints((who + 1) % 2, 1);
+        maybeStartNextRound(true);
     }
 }
