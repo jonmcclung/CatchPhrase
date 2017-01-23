@@ -41,47 +41,12 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"/>
 
-        <LinearLayout
-            android:id="@+id/activity_game_buttons"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/activity_game_button_height"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <Button
-                android:id="@+id/pass_button"
-                style="@style/buttonStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:onClick="pass"/>
-
-            <Button
-                android:id="@+id/got_it_button"
-                style="@style/buttonStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:onClick="gotIt"
-                android:text="@string/got_it"/>
-        </LinearLayout>
-
-        <com.lerenard.catchphrase.helper.FontFitTextView
-            android:id="@+id/word_view"
+        <include
+            layout="@layout/activity_game_main_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_above="@id/activity_game_buttons"
-            android:layout_below="@id/activity_game_recyclerView"
-            android:gravity="center"
-            app:maxTextSize="128sp"
-            app:minTextSize="24sp"/>
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/activity_game_recyclerView"/>
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

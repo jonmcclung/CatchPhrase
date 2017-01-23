@@ -76,6 +76,7 @@ public class GameActivity extends AppCompatActivity
                 (savedInstanceState == null ? getIntent().getExtras() : savedInstanceState);
         restoreState(savedState);
         wordView = (FontFitTextView) findViewById(R.id.word_view);
+        Log.d(TAG, "got wordView: " + wordView);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_game_recyclerView);
         ArrayList<Game> gameDisplayList = new ArrayList<>();
@@ -101,14 +102,6 @@ public class GameActivity extends AppCompatActivity
         super.onStop();
         beep.cancel();
         updateDatabaseWithGame();
-        for (String tag : dialogTags) {
-            DialogFragment dialog =
-                    (DialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
-            if (dialog != null) {
-                dialog.dismiss();
-                break;
-            }
-        }
     }
 
     private void updateDatabaseWithGame() {
@@ -125,6 +118,18 @@ public class GameActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(GAME_KEY, game);
+        /*
+        // Not sure where this code ought to go to ensure the dialog doesn't leak.
+        // Currently I get "dismiss not allowed after onSaveInstanceState," which is confusing since
+        // I'm only trying to do it *in* onSaveInstanceState.
+        for (String tag : dialogTags) {
+            DialogFragment dialog =
+                    (DialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
+            if (dialog != null) {
+                dialog.dismiss();
+                break;
+            }
+        }*/
     }
 
     private void restoreState(Bundle state) {
@@ -213,7 +218,7 @@ public class GameActivity extends AppCompatActivity
                 if (passingDialog != null) {
                     passingDialog.setListener(this);
                 }
-                else{
+                else {
                     confirmNextRound(false);
                 }
             }
