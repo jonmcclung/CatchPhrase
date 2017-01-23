@@ -94,17 +94,6 @@ class Beep {
 
     public void interrupt() {
         cancelTimers();
-        if (!silent) {
-            /*
-            a#: 932
-            a: 880
-            g#: 831
-            d#: 622
-            */
-            double[] interruptFrequencies = {932, 880, 831, 622, 1, 622};
-            double[] interruptDurations = {.2, .2, .2, .2, .1, .2};
-            SoundGenerator.generate(interruptDurations, interruptFrequencies).play();
-        }
     }
 
     private void increment() {

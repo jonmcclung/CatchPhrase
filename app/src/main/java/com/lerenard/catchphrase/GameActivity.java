@@ -244,6 +244,15 @@ public class GameActivity extends AppCompatActivity
 
     private void showModifyScores() {
         beep.interrupt();
+            /*
+            a#: 932
+            a: 880
+            g#: 831
+            d#: 622
+            */
+        double[] interruptFrequencies = {932, 880, 831, 622, 1, 622};
+        double[] interruptDurations = {.2, .2, .2, .2, .1, .2};
+        player.play(SoundGenerator.generate(interruptDurations, interruptFrequencies));
         ModifyScoreDialog dialog = ModifyScoreDialog.newInstance(game.getScores());
         dialog.setListener(this);
         dialog.show(getSupportFragmentManager(), SHOW_MODIFY_SCORES_TAG);
@@ -289,9 +298,9 @@ public class GameActivity extends AppCompatActivity
         // f5:  1397
         // a6:  1760
         // a#6: 1865
-        double[] interruptFrequencies = {932, 1175, 1397, 1760, 1865};
-        double[] interruptDurations = {.2, .2, .2, .2, .8};
-        player.play(SoundGenerator.generate(interruptDurations, interruptFrequencies));
+        double[] gameOverFrequencies = {932, 1175, 1397, 1760, 1865};
+        double[] gameOverDurations = {.2, .2, .2, .2, .8};
+        player.play(SoundGenerator.generate(gameOverDurations, gameOverFrequencies));
 
         new AlertDialog.Builder(this)
                 .setMessage(
