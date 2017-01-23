@@ -1,32 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_small_game"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.lerenard.catchphrase.SmallGameActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/activity_small_game_counter"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="@color/listItem"
-        android:gravity="center_horizontal"
-        android:padding="@dimen/end_round_dialog_margin"
-        android:textColor="@color/darkText"
-        android:textSize="@dimen/button_text_size"/>
+        android:fitsSystemWindows="true"
+        app:theme="@style/AppTheme.AppBarOverlay">
 
-    <include
-        layout="@layout/activity_game_main_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/small_game_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/activity_small_game_counter"/>
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="com.lerenard.catchphrase.SmallGameActivity">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/activity_small_game_counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/listItem"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/end_round_dialog_margin"
+            android:textColor="@color/darkText"
+            android:textSize="@dimen/button_text_size"/>
+
+        <include
+            layout="@layout/activity_game_main_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/activity_small_game_counter"/>
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

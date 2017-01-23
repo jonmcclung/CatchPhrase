@@ -53,6 +53,9 @@ public abstract class GameBaseActivity extends AppCompatActivity implements Beep
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    protected void init(Bundle savedInstanceState) {
         Bundle savedState =
                 (savedInstanceState == null ? getIntent().getExtras() : savedInstanceState);
         restoreState(savedState);

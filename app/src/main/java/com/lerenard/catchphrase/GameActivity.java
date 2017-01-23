@@ -76,6 +76,7 @@ public class GameActivity extends GameBaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         setSupportActionBar((Toolbar) findViewById(R.id.activity_game_toolbar));
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_game_recyclerView);
@@ -87,7 +88,7 @@ public class GameActivity extends GameBaseActivity
         }
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        super.onCreate(savedInstanceState);
+        init(savedInstanceState);
         adapter.add(game, false);
         if (savedInstanceState == null) {
             confirmNextRound(false);

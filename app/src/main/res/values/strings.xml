@@ -59,4 +59,5 @@
     <string name="passing_choice">The device was being passed</string>
     <string name="passing_dialog_message">Who was holding the device when time ran out?</string>
     <string name="new_small_game_dialog_message">How many passes should be allowed?</string>
+    <string name="small_game_help_message">This version of the game is for small groups of people. The goal is to get everyone else to guess as many words as possible before time runs out. At that time, you simply pass the device to the person to your left and let them take a turn giving clues.</string>
 </resources>

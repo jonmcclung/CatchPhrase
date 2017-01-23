@@ -1,7 +1,12 @@
 package com.lerenard.catchphrase;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -60,9 +65,41 @@ public class SmallGameActivity extends GameBaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.small_game, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.activity_small_game_help:
+                showHelp();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showHelp() {
+        beep.interrupt();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.help_title)
+                .setMessage(R.string.small_game_help_message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        confirmNextRound(false);
+                    }
+                })
+                .show();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_small_game);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_small_game);
+        init(savedInstanceState);
+        setSupportActionBar((Toolbar) findViewById(R.id.small_game_toolbar));
         wordsGuessView = (TextView) findViewById(R.id.activity_small_game_counter);
         wordsGuessView.setText(String.valueOf(wordsGuessed));
         confirmNextRound(savedInstanceState != null);
