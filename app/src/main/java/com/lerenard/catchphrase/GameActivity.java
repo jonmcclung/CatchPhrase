@@ -70,6 +70,17 @@ public class GameActivity extends GameBaseActivity
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        for (String tag : dialogTags) {
+            if (getSupportFragmentManager().findFragmentByTag(tag) != null) {
+                return;
+            }
+        }
+        confirmNextRound(false);
+    }
+
+    @Override
     protected void restoreState(Bundle state) {
         game = state.getParcelable(GAME_KEY);
     }
@@ -111,8 +122,8 @@ public class GameActivity extends GameBaseActivity
         game.resetPassesUsed();
     }
 
-    protected void startRoundFromInactiveActivity() {
-        super.startRoundFromInactiveActivity();
+    protected void setupRoundFromInactiveActivity() {
+        super.setupRoundFromInactiveActivity();
         if (!game.isGameOver()) {
             updateButtons();
         }
@@ -208,6 +219,7 @@ public class GameActivity extends GameBaseActivity
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState");
         ModifyScoreDialog modifyScoreDialog =
                 (ModifyScoreDialog) getSupportFragmentManager()
                         .findFragmentByTag(SHOW_MODIFY_SCORES_TAG);
@@ -227,6 +239,7 @@ public class GameActivity extends GameBaseActivity
                     passingDialog.setListener(this);
                 }
                 else {
+                    Log.d(TAG, "confirming");
                     confirmNextRound(false);
                 }
             }

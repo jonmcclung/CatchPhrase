@@ -2,7 +2,6 @@ package com.lerenard.catchphrase;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -62,12 +61,12 @@ public abstract class GameBaseActivity extends AppCompatActivity implements Beep
         wordView = (FontFitTextView) findViewById(R.id.word_view);
         passButton = (Button) findViewById(R.id.pass_button);
         gotItButton = (Button) findViewById(R.id.got_it_button);
-        startRoundFromInactiveActivity();
+        setupRoundFromInactiveActivity();
     }
 
     protected abstract void restoreState(Bundle state);
 
-    protected void startRoundFromInactiveActivity() {
+    protected void setupRoundFromInactiveActivity() {
         initializeBeep();
     }
 
@@ -127,7 +126,7 @@ public abstract class GameBaseActivity extends AppCompatActivity implements Beep
     @Override
     protected void onRestart() {
         super.onRestart();
-        startRoundFromInactiveActivity();
+        setupRoundFromInactiveActivity();
     }
 
     @Override

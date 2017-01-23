@@ -71,6 +71,12 @@ public class SmallGameActivity extends GameBaseActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        confirmNextRound(false);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.activity_small_game_help:
@@ -117,8 +123,8 @@ public class SmallGameActivity extends GameBaseActivity {
     }
 
     @Override
-    protected void startRoundFromInactiveActivity() {
-        super.startRoundFromInactiveActivity();
+    protected void setupRoundFromInactiveActivity() {
+        super.setupRoundFromInactiveActivity();
         updateButtons();
     }
 
