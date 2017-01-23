@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,6 @@ public class GameActivity extends AppCompatActivity
             TAG = "GameActivity_",
             SHOW_MODIFY_SCORES_TAG = "SHOW_MODIFY_SCORES_TAG",
             ROUND_END_TAG = "ROUND_END_TAG",
-            GAME_OVER_TAG = "GAME_OVER_TAG",
             PASSING_DIALOG_TAG = "PASSING_DIALOG_TAG";
     private GameAdapter adapter;
     private FontFitTextView wordView;
@@ -41,6 +41,8 @@ public class GameActivity extends AppCompatActivity
     private Button passButton, gotItButton;
     private Beep beep;
     private String passesLeftFormatString;
+    private String[] dialogTags = {SHOW_MODIFY_SCORES_TAG, ROUND_END_TAG, PASSING_DIALOG_TAG};
+    private SoundPlayer player = new SoundPlayer();
 
     public void pass(View v) {
         if (game.requestPass() != -1) {
@@ -99,6 +101,14 @@ public class GameActivity extends AppCompatActivity
         super.onStop();
         beep.cancel();
         updateDatabaseWithGame();
+        for (String tag : dialogTags) {
+            DialogFragment dialog =
+                    (DialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
+            if (dialog != null) {
+                dialog.dismiss();
+                break;
+            }
+        }
     }
 
     private void updateDatabaseWithGame() {
@@ -270,7 +280,7 @@ public class GameActivity extends AppCompatActivity
                 }
             }
         });
-        SoundGenerator.generate(2, 500).play();
+        player.play(SoundGenerator.generate(2, 500));
     }
 
     private void gameOver() {
@@ -281,7 +291,7 @@ public class GameActivity extends AppCompatActivity
         // a#6: 1865
         double[] interruptFrequencies = {932, 1175, 1397, 1760, 1865};
         double[] interruptDurations = {.2, .2, .2, .2, .8};
-        SoundGenerator.generate(interruptDurations, interruptFrequencies).play();
+        player.play(SoundGenerator.generate(interruptDurations, interruptFrequencies));
 
         new AlertDialog.Builder(this)
                 .setMessage(
@@ -338,7 +348,7 @@ public class GameActivity extends AppCompatActivity
         for (int i = 0; i < howMuch; ++i) {
             System.arraycopy(teamFrequencies[who], 0, frequencies, i * length, length);
         }
-        SoundGenerator.generate(durations, frequencies).play();
+        player.play(SoundGenerator.generate(durations, frequencies));
     }
 
     private void maybeStartNextRound(boolean isNext) {

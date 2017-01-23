@@ -66,6 +66,7 @@ public class SoundGenerator {
                                         generatedSound.length,
                                         AudioTrack.MODE_STATIC);
         res.write(generatedSound, 0, generatedSound.length);
+        res.setNotificationMarkerPosition(generatedSound.length / 2);
         return res;
     }
 }
