@@ -113,7 +113,7 @@ public class GameActivity extends GameBaseActivity
     }
 
     @Override
-    protected void nextRound() {
+    public void nextRound() {
         super.nextRound();
     }
 

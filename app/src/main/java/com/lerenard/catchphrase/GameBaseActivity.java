@@ -1,8 +1,6 @@
 package com.lerenard.catchphrase;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -15,9 +13,12 @@ import java.util.Locale;
  * Created by mc on 22-Jan-17.
  */
 
-public abstract class GameBaseActivity extends AppCompatActivity implements Beep.BeepListener {
+public abstract class GameBaseActivity extends AppCompatActivity implements Beep.BeepListener,
+                                                                            NextRoundDialog
+                                                                                    .Listener {
     public static final String GAME_KEY = "GAME_KEY";
     private static final String TAG = "GameBaseActivity";
+    private static final String NEXT_ROUND_DIALOG_TAG = "NEXT_ROUND_DIALOG_TAG";
     protected Button passButton, gotItButton;
     protected Beep beep;
     protected SoundPlayer player = new SoundPlayer();
@@ -54,6 +55,12 @@ public abstract class GameBaseActivity extends AppCompatActivity implements Beep
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        beep.cancel();
+    }
+
     protected void init(Bundle savedInstanceState) {
         Bundle savedState =
                 (savedInstanceState == null ? getIntent().getExtras() : savedInstanceState);
@@ -75,44 +82,19 @@ public abstract class GameBaseActivity extends AppCompatActivity implements Beep
         beep.setListener(this);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        beep.cancel();
-    }
-
     protected void confirmNextRound(boolean isNext) {
-        new AlertDialog.Builder(this)
-                .setTitle(String.format(
-                        Locale.getDefault(),
-                        getString(R.string.confirm_next_round_title),
-                        isNext ? getString(R.string.confirm_next_round_title_is_next)
-                               : getString(R.string.confirm_next_round_title_is_not_next)))
-                .setMessage(String.format(
-                        Locale.getDefault(),
-                        getString(R.string.confirm_next_round_message),
-                        getString(R.string.ok),
-                        isNext ? getString(R.string.confirm_next_round_is_next)
-                               : getString(
-                                       R.string.confirm_next_round_is_not_next)))
-                .setPositiveButton(
-                        R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(
-                                    DialogInterface dialog, int which) {
-                                nextRound();
-                            }
-                        })
-                .setCancelable(false)
-                .setNegativeButton("Quit", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                }).show();
+        if (getSupportFragmentManager().findFragmentByTag(NEXT_ROUND_DIALOG_TAG) == null) {
+            NextRoundDialog nextRoundDialog = new NextRoundDialog();
+            Bundle args = new Bundle();
+            args.putBoolean(NextRoundDialog.IS_NEXT, isNext);
+            nextRoundDialog.setArguments(args);
+            nextRoundDialog.setListener(this);
+            nextRoundDialog.show(getSupportFragmentManager(), NEXT_ROUND_DIALOG_TAG);
+        }
     }
 
-    protected void nextRound() {
+    @Override
+    public void nextRound() {
         nextWord();
         resetPassesLeft();
         passButton.setEnabled(true);
@@ -121,11 +103,22 @@ public abstract class GameBaseActivity extends AppCompatActivity implements Beep
         beep.restart();
     }
 
+    @Override
+    public void quit() {
+        finish();
+    }
+
     protected abstract void resetPassesLeft();
 
     @Override
     protected void onRestart() {
         super.onRestart();
+        NextRoundDialog dialog =
+                (NextRoundDialog) getSupportFragmentManager()
+                        .findFragmentByTag(NEXT_ROUND_DIALOG_TAG);
+        if (dialog != null) {
+            dialog.setListener(this);
+        }
         setupRoundFromInactiveActivity();
     }
 
