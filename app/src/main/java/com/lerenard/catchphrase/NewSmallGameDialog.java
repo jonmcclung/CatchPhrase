@@ -15,12 +15,13 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import static com.lerenard.catchphrase.NewGameDialog.TEAM_ONE_DEFAULT_PASSES_ALLOWED;
+
 /**
  * Created by mc on 22-Jan-17.
  */
 
 public class NewSmallGameDialog extends DialogFragment {
-
     private Listener listener;
 
     @NonNull
@@ -33,10 +34,13 @@ public class NewSmallGameDialog extends DialogFragment {
                 (EditText) dialogView.findViewById(R.id.small_game_passes_allowed_field);
 
         passesAllowed.setText(String.format(Locale.getDefault(), "%d",
-                              getContext().getSharedPreferences(
-                                      MainApplication.SHARED_PREFERENCES_FILENAME,
-                                      Context.MODE_PRIVATE)
-                                          .getInt(NewGameDialog.TEAM_ONE_DEFAULT_PASSES_ALLOWED, -1)));
+                                            getContext().getSharedPreferences(
+                                                    MainApplication.SHARED_PREFERENCES_FILENAME,
+                                                    Context.MODE_PRIVATE)
+                                                        .getInt(
+                                                                TEAM_ONE_DEFAULT_PASSES_ALLOWED,
+                                                                Integer.parseInt(getString(
+                                                                        R.string.default_passes_allowed)))));
 
         passesAllowed.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -68,7 +72,7 @@ public class NewSmallGameDialog extends DialogFragment {
                     MainApplication.SHARED_PREFERENCES_FILENAME,
                     Context.MODE_PRIVATE)
                         .edit()
-                        .putInt(NewGameDialog.TEAM_ONE_DEFAULT_PASSES_ALLOWED, passes)
+                        .putInt(TEAM_ONE_DEFAULT_PASSES_ALLOWED, passes)
                         .apply();
             dismiss();
         }

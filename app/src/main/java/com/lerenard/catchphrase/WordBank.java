@@ -2,6 +2,7 @@ package com.lerenard.catchphrase;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.Random;
  */
 
 public class WordBank {
-    private static final String SEED_KEY = "SEED_KEY", INDEX_KEY = "INDEX_KEY";
+    private static final String SEED_KEY = "SEED_KEY", INDEX_KEY = "INDEX_KEY", TAG = "WordBank_";
     private static WordBank instance;
     private static String filename = "nouns.txt";
     private static ArrayList<String> unmodifiedWords;
