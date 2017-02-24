@@ -24,8 +24,6 @@ public class WordBank {
     private ArrayList<String> words;
     private int index;
 
-    // Let's find this comment!
-
     private WordBank(ArrayList<String> words, int index) {
         this.words = words;
         this.index = index % words.size();
